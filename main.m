@@ -6,7 +6,7 @@ folder = "**\data";
 file_list = dir(fullfile(folder,'*.xls'));
 all_data=[];
 actions={'bench','deadlift', 'row', 'squat'};
-n=3;
+n=1;
 for i = n:length(file_list)
     n=n+1;
     % full file path
@@ -38,65 +38,77 @@ for i = n:length(file_list)
     clear title_list_accrow;
 
     % calculate velocity and plot
-    data_velo_row = CalcuVelo(data_acc_row);
+    velo_row = CalcuVelo(data_acc_row);
     title_list_velodetrend={'velo-row','veloX','veloY','veloZ','veloAbs'};
-    plot_sub_4(file_name_nosuf,data_velo_row,title_list_velodetrend);
+    plot_sub_4(file_name_nosuf,velo_row,title_list_velodetrend);
     clear title_list_velodetrend;
 
     % Filtering_detrend
-    data_acc_filter_detrend=[];
-    data_acc_filter_detrend(:,1) = data_acc_row(:,1);
-    data_acc_filter_detrend(:,2) = detrend(accX_row);
-    data_acc_filter_detrend(:,3) = detrend(accY_row);
-    data_acc_filter_detrend(:,4) = detrend(accZ_row);
-    data_acc_filter_detrend(:,5) = detrend(accAbs_row);
+    acc_filter_detrend=[];
+    acc_filter_detrend(:,1) = data_acc_row(:,1);
+    acc_filter_detrend(:,2) = detrend(accX_row);
+    acc_filter_detrend(:,3) = detrend(accY_row);
+    acc_filter_detrend(:,4) = detrend(accZ_row);
+    acc_filter_detrend(:,5) = detrend(accAbs_row);
     title_list_accdetrend={'acc-detrend','accX','accY','accZ','accAbs'};
-    plot_sub_4(file_name_nosuf,data_acc_filter_detrend,title_list_accdetrend);
+    plot_sub_4(file_name_nosuf,acc_filter_detrend,title_list_accdetrend);
     clear title_list_accdetrend;
-    data_velo_filter_detrend = CalcuVelo(data_acc_filter_detrend);
+    velo_filter_detrend = CalcuVelo(acc_filter_detrend);
     title_list_velodetrend={'velo-filter-detrend','veloX','veloY','veloZ','veloAbs'};
-    plot_sub_4(file_name_nosuf,data_velo_filter_detrend,title_list_velodetrend);
+    plot_sub_4(file_name_nosuf,velo_filter_detrend,title_list_velodetrend);
     clear title_list_velodetrend;
 
     % Filtering_demean
-    data_acc_filter_demean=[];
-    data_acc_filter_demean(:,1) = data_acc_row(:,1);
-    data_acc_filter_demean(:,2) = accX_row-mean(accX_row);
-    data_acc_filter_demean(:,3) = accY_row-mean(accY_row);
-    data_acc_filter_demean(:,4) = accZ_row-mean(accZ_row);
-    data_acc_filter_demean(:,5) = accAbs_row-mean(accAbs_row);
+    acc_filter_demean=[];
+    acc_filter_demean(:,1) = data_acc_row(:,1);
+    acc_filter_demean(:,2) = accX_row-mean(accX_row);
+    acc_filter_demean(:,3) = accY_row-mean(accY_row);
+    acc_filter_demean(:,4) = accZ_row-mean(accZ_row);
+    acc_filter_demean(:,5) = accAbs_row-mean(accAbs_row);
 
     title_list_accdemean={'acc-demean','accX','accY','accZ','accAbs'};
-    plot_sub_4(file_name_nosuf,data_acc_filter_detrend,title_list_accdemean);
+    plot_sub_4(file_name_nosuf,acc_filter_detrend,title_list_accdemean);
     clear title_list_accdemean;
-    data_velo_filter_detrend = CalcuVelo(data_acc_filter_demean);
+    velo_filter_detrend = CalcuVelo(acc_filter_demean);
     title_list_velodemean={'velo-filter-demean','veloX','veloY','veloZ','veloAbs'};
-    plot_sub_4(file_name_nosuf,data_velo_filter_detrend,title_list_velodemean);
+    plot_sub_4(file_name_nosuf,velo_filter_detrend,title_list_velodemean);
     clear title_list_velodemean;
 
     % Plot the FFT magnitude spectrum
-    FFTSpec(data_acc_filter_demean(:,1),data_acc_filter_demean(:,2))
-    FFTSpec(data_acc_filter_demean(:,1),data_acc_filter_demean(:,4))
+    % FFTSpec(acc_filter_demean(:,1),acc_filter_demean(:,2))
+    % FFTSpec(acc_filter_demean(:,1),acc_filter_demean(:,4))
 
     % Plot the power spectral density
-    pwelchSpec(data_acc_filter_demean(:,1),data_acc_filter_demean(:,2))
-    pwelchSpec(data_acc_filter_demean(:,1),data_acc_filter_demean(:,4))
+    % pwelchSpec(acc_filter_demean(:,1),acc_filter_demean(:,2))
+    % pwelchSpec(acc_filter_demean(:,1),acc_filter_demean(:,4))
 
     %filtfilt
     f_low =0.1;      % High-pass filter, remove low-frequency drift
     f_high = 10;       % Low-pass cutoff, removing high-frequency noise (5~10 Hz)
     % [data_acc_filtfilt] = filterfilt(data_acc_filter_demean,f_low,f_high);
-    data_acc_filtfilt = filterfilt(data_acc_filter_detrend,f_low,f_high);
+    acc_filtfilt = filterfilt(acc_filter_detrend,f_low,f_high);
     title_list_acc_filtfilt={'acc-filtfilt','accX','accY','accZ','accAbs'};
-    plot_sub_4(file_name_nosuf,data_acc_filtfilt,title_list_acc_filtfilt);
+    plot_sub_4(file_name_nosuf,acc_filtfilt,title_list_acc_filtfilt);
     clear title_list_acc_filtfilt;
-    data_velo_filtfilt = CalcuVelo(data_acc_filtfilt);
+    velo_filtfilt = CalcuVelo(acc_filtfilt);
     title_list_velofiltfilt={'velo-filtfilt','veloX','veloY','veloZ','veloAbs'};
-    plot_sub_4(file_name_nosuf,data_velo_filtfilt,title_list_velofiltfilt);
+    plot_sub_4(file_name_nosuf,velo_filtfilt,title_list_velofiltfilt);
     clear title_list_velofiltfilt;
     
-    %
-    moveRMS(data_acc_filtfilt,category)
+    % Determine the effective range of motion
+    [valid_range,winLen] = moveRMS(acc_filtfilt,category);
+    % 
+    if category=="deadlift"
+        velo_tar = velo_filtfilt(:,4);
+    elseif category=="bench"
+        velo_tar = velo_filtfilt(:,5);
+    else
+        velo_tar = velo_filtfilt(:,2);
+    end
+        velo_tar_valid = velo_tar(valid_range);
+    [point_begin_array,point_peak_array,point_finish_array]=movePeak(winLen,velo_tar_valid);
+
+
     % close all figure
     close all;
 end

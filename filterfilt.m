@@ -1,5 +1,5 @@
 function [data_filt] = filterfilt(data,f_low,f_high)
-fs = 1 / mean(diff(data(:,1)));   % 采样频率，约 61.44 Hz
+fs = 1 / mean(diff(data(:,1)));   % Sampling Frequency
 
 order = 4;
 f_filt=[f_low, f_high]/(fs/2);

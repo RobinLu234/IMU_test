@@ -6,7 +6,7 @@ folder = "**\data";
 file_list = dir(fullfile(folder,'*.xls'));
 all_data=[];
 actions={'bench','deadlift', 'row', 'squat'};
-n=1;
+n=3; %for test 
 for i = n:length(file_list)
     n=n+1;
     % full file path
@@ -17,9 +17,10 @@ for i = n:length(file_list)
     action_word = string(lower(action_word));
     idx = find(strcmp(action_word, actions));
     if ~isempty(idx)
-        category = actions{idx};  % 或 actions(idx) 如果是 string
+        % category = actions{idx};  
+        category = actions(idx); 
     else
-        category = 'unknown';     % 未匹配
+        category = 'unknown';     % no match
     end
     % read data
     warning('off', 'MATLAB:table:ModifiedAndSavedVarnames');
@@ -106,7 +107,15 @@ for i = n:length(file_list)
         velo_tar = velo_filtfilt(:,2);
     end
         velo_tar_valid = velo_tar(valid_range);
-    [point_begin_array,point_peak_array,point_finish_array]=movePeak(winLen,velo_tar_valid);
+    [point_peak_array,point_trough_array]=movePeak(winLen,velo_tar_valid);
+figure;
+hold on;
+plot(velo_tar_valid)
+plot(point_peak_array(:,1),point_peak_array(:,2),'o','color','b')
+text(point_peak_array(:,1)+30,point_peak_array(:,2),'pk','color','b')
+plot(point_trough_array(:,1),point_trough_array(:,2),'x','color','k')
+text(point_trough_array(:,1)+30,point_trough_array(:,2),'Tr','color','k')
+
 
 
     % close all figure
